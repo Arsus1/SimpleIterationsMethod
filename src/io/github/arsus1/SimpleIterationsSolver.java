@@ -10,10 +10,41 @@ import static java.lang.Math.max;
  */
 public class SimpleIterationsSolver implements Solver {
     /**
-     * Проверка на соблюдение нестрогого условия
+     * Проверка на соблюдение строгого условия
+     *
      * @param matrix Матрица
      * @return Соблюдено ли условие
      */
+    private boolean diagonalDominanceConditionMet(Matrix matrix) {
+        for (int i = 0; i < matrix.getDimension(); i++) {
+            double sum = 0;
+            int max = 0;
+            for (int j = 0; j < matrix.getDimension(); j++) {
+                if (abs(matrix.get(i, max)) < abs(matrix.get(i, j))) {
+                    max = j;
+                }
+                sum += abs(matrix.get(i, j));
+            }
+            if (2 * abs(matrix.get(i, max)) > sum) {
+                double tmp;
+                for (int j = 0; j <= matrix.getDimension(); j++) {
+                    tmp = matrix.get(i, j);
+                    matrix.set(i, j, matrix.get(max, j));
+                    matrix.set(max, j, tmp);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Проверка на соблюдение нестрогого условия
+     *
+     * @param matrix Матрица
+     * @return Соблюдено ли условие
+     */
+
     private boolean matrixNormConditionMet(Matrix matrix) {
         int[] row = new int[matrix.getDimension()];
         boolean[] flag = new boolean[matrix.getDimension()];
@@ -45,6 +76,7 @@ public class SimpleIterationsSolver implements Solver {
 
     /**
      * Возвращает столбец независимых коэффициентов
+     *
      * @param matrix Матрица
      * @return Столбец независимых коэффициентов
      */
@@ -59,6 +91,7 @@ public class SimpleIterationsSolver implements Solver {
 
     /**
      * Возвращает матрицу коэффициентов при X
+     *
      * @param matrix Матрица
      * @return Коэффициенты при X
      */
@@ -80,7 +113,7 @@ public class SimpleIterationsSolver implements Solver {
             throw new SolverException("Invalid accuracy!");
         }
 
-        if (matrixNormConditionMet(matrix)) {
+        if (diagonalDominanceConditionMet(matrix) || matrixNormConditionMet(matrix)) {
 
             for (int i = 0; i < matrix.getDimension(); i++) {
                 double divisor = matrix.get(i, i);
