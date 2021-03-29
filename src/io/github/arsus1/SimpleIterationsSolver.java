@@ -9,13 +9,17 @@ import static java.lang.Math.max;
  * Метод простых итераций
  */
 public class SimpleIterationsSolver implements Solver {
+
     /**
-     * Проверка на соблюдение строгого условия
+     * Проверка на соблюдение нестрогого условия
      *
      * @param matrix Матрица
      * @return Соблюдено ли условие
      */
+
     private boolean diagonalDominanceConditionMet(Matrix matrix) {
+        int[] row = new int[matrix.getDimension()];
+        boolean[] flag = new boolean[matrix.getDimension()];
         for (int i = 0; i < matrix.getDimension(); i++) {
             double sum = 0;
             int max = 0;
@@ -25,44 +29,12 @@ public class SimpleIterationsSolver implements Solver {
                 }
                 sum += abs(matrix.get(i, j));
             }
-            if (2 * abs(matrix.get(i, max)) > sum) {
-                double tmp;
-                for (int j = 0; j <= matrix.getDimension(); j++) {
-                    tmp = matrix.get(i, j);
-                    matrix.set(i, j, matrix.get(max, j));
-                    matrix.set(max, j, tmp);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Проверка на соблюдение нестрогого условия
-     *
-     * @param matrix Матрица
-     * @return Соблюдено ли условие
-     */
-
-    private boolean matrixNormConditionMet(Matrix matrix) {
-        int[] row = new int[matrix.getDimension()];
-        boolean[] flag = new boolean[matrix.getDimension()];
-        for (int i = 0; i < matrix.getDimension(); i++) {
-            double sum = 0;
-            double foo = 0;
-            int max = 0;
-            for (int j = 0; j < matrix.getDimension(); j++) {
-                if (foo < abs(matrix.get(i, j)) && !flag[j]) {
-                    max = j;
-                    foo = abs(matrix.get(i, j));
-                }
-                sum += abs(matrix.get(i, j));
-            }
-            if (2 * abs(matrix.get(i, max)) >= sum && !flag[max]) {
+            if (2 * abs(matrix.get(i, max)) > sum && !flag[max]) {
                 flag[max] = true;
                 row[max] = i;
-            } else return false;
+            } else {
+                return false;
+            }
         }
         double[][] element = new double[matrix.getDimension()][matrix.getDimension() + 1];
         for (int i = 0; i < matrix.getDimension(); i++) {
@@ -113,7 +85,7 @@ public class SimpleIterationsSolver implements Solver {
             throw new SolverException("Invalid accuracy!");
         }
 
-        if (diagonalDominanceConditionMet(matrix) || matrixNormConditionMet(matrix)) {
+        if (diagonalDominanceConditionMet(matrix)) {
 
             for (int i = 0; i < matrix.getDimension(); i++) {
                 double divisor = matrix.get(i, i);
